@@ -1,7 +1,11 @@
+const CACHE_NAME = 'cache-1';
+
+
+
 self.addEventListener('install', e => {
 
 
-    const cacheProm = caches.open('cache-1')
+    const cacheProm = caches.open(CACHE_NAME)
         .then(cache => {
 
             return cache.addAll([
@@ -18,5 +22,33 @@ self.addEventListener('install', e => {
 
 
     e.waitUntil(cacheProm);
+
+});
+
+
+
+self.addEventListener('fetch', e => {
+
+
+    // Network Fallback
+    const respuesta = caches.match(e.request)
+        .then(res => {
+
+            if (res) return res;
+
+            // no esta el archivo
+
+            return fetch(e.request).then(newResp => {
+
+                caches.open(CACHE_NAME)
+                    .then(cache => {
+                        cache.put(e.request, newResp);
+                    });
+
+                return newResp.clone();
+            });
+
+        });
+
 
 });
