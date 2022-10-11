@@ -53,7 +53,9 @@ self.addEventListener('install', e => {
     e.waitUntil(Promise.all([cacheProm, cacheInmutable]));
 
 });
-elf.addEventListener('fetch', e => {
+
+
+self.addEventListener('fetch', e => {
 
 
     //Network Fallback
