@@ -1,4 +1,4 @@
-const CACHE_STATIC_NAME = 'static-v1';
+const CACHE_STATIC_NAME = 'static-v2';
 const CACHE_DYNAMIC_NAME = 'dynamic-v1';
 const CACHE_INMUTABLE_NAME = 'inmutable-v1';
 
@@ -66,14 +66,22 @@ elf.addEventListener('fetch', e => {
 
             return fetch(e.request).then(newResp => {
 
-                caches.open(CACHE_DYNAMIC_NAME)
-                    .then(cache => {
-                        cache.put(e.request, newResp);
-                        limpiarCache(CACHE_DYNAMIC_NAME, 50);
-                    });
+                    caches.open(CACHE_DYNAMIC_NAME)
+                        .then(cache => {
+                            cache.put(e.request, newResp);
+                            limpiarCache(CACHE_DYNAMIC_NAME, 50);
+                        });
 
-                return newResp.clone();
-            })
+                    return newResp.clone();
+                })
+                .catch(err => {
+
+                    if (e.request.headers.get('accept').includes('text/html')) {
+                        return caches.match('/pages/offline.html');
+                    }
+
+
+                });
 
 
         });
